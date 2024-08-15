@@ -4,6 +4,7 @@ import { PromModule } from '@digikare/nestjs-prom';
 import { CylinderModule } from './cylinder/cylinder.module';
 import { MyNatsMiddleware } from './middleware/nats.middleware';
 import { MyExceptionFilter } from './exception/exception.filter';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { MyExceptionFilter } from './exception/exception.filter';
         enabled: true,
       },
     }),
+    HealthModule,
     CylinderModule,
   ],
   providers: [
