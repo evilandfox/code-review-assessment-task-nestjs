@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { connect, StringCodec } from 'nats';
+import { connect, type NatsConnection, StringCodec } from 'nats';
 
 @Injectable()
 export class CylinderService {
-  private client;
+  private client: NatsConnection;
   private sc = StringCodec();
 
   async calculateArea(radius: number, height: number): Promise<number> {
@@ -24,19 +24,9 @@ export class CylinderService {
   private async sendCalculationRequest(data: any): Promise<string> {
     const requestData = this.sc.encode(JSON.stringify(data));
 
-    const sub = this.client.subscribe('calculatedResult');
+    const msg = await this.client.request('calculateArea', requestData);
 
-    await this.client.publish('calculateArea', requestData);
-
-    return new Promise<string>((resolve) => {
-      (async () => {
-        for await (const msg of sub) {
-          resolve(this.sc.decode(msg.data));
-          sub.unsubscribe();
-          break;
-        }
-      })();
-    });
+    return this.sc.decode(msg.data);
   }
 
   private parseResponse(response: string): any {

@@ -14,7 +14,7 @@ const createNatsConnection = async () => {
     console.log(`[${sub.getProcessed()}]: ${sc.decode(m.data)}`);
     const { radius, height } = JSON.parse(sc.decode(m.data));
     const area = Math.PI * radius * radius * height;
-    nc.publish('calculatedResult', sc.encode(area.toString()));
+    m.respond(sc.encode(area.toString()))
   }
   console.log('Subscription closed');
 };
